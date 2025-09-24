@@ -15,6 +15,9 @@ from admin.admin_calls import *
 from admin.admin_settings import *
 from admin.broadcast import *
 from admin.ban import *
+from admin.post_chat_settings import *
+
+from bot.copy_posts import *
 
 from models import init_db
 
@@ -27,6 +30,12 @@ def setup_and_run():
 
     app = MyApp.build_app()
 
+    app.add_handler(relay_main_channel_post_handler)
+
+    app.add_handler(add_postchat_handler)
+    app.add_handler(update_postchat_handler)
+    app.add_handler(delete_postchat_handler)
+    app.add_handler(postchat_settings_handler)
 
     app.add_handler(user_settings_handler)
     app.add_handler(change_lang_handler)

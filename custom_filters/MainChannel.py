@@ -3,10 +3,10 @@ from telegram.ext.filters import UpdateFilter
 import models
 
 
-class Admin(UpdateFilter):
+class MainChannel(UpdateFilter):
     def filter(self, update: Update):
         with models.session_scope() as s:
-            user = s.get(models.User, update.effective_user.id)
-            if not user:
+            post_chat = s.get(models.PostChat, update.effective_chat.id)
+            if not post_chat:
                 return False
-            return user.is_admin
+            return post_chat.is_main

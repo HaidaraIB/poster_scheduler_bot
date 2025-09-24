@@ -1,0 +1,1 @@
+from bot.copy_posts.handlers import relay_main_channel_post_handler

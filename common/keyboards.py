@@ -24,25 +24,31 @@ def build_admin_keyboard():
     keyboard = [
         [
             InlineKeyboardButton(
-                text="إعدادات الآدمن ⚙️🎛",
+                text="🎛 إعدادات الآدمن ⚙️",
                 callback_data="admin_settings",
             )
         ],
         [
             InlineKeyboardButton(
-                text="حظر/فك حظر 🔓🔒",
+                text="👥 إعدادات القنوات/المجموعات 📢",
+                callback_data="postchat_settings",
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🔒 حظر/فك حظر 🔓",
                 callback_data="ban_unban",
             )
         ],
         [
             InlineKeyboardButton(
-                text="إخفاء/إظهار كيبورد معرفة الآيديات🪄",
+                text="إخفاء/إظهار كيبورد معرفة الآيديات 🪄",
                 callback_data="hide_ids_keyboard",
             )
         ],
         [
             InlineKeyboardButton(
-                text="رسالة جماعية👥",
+                text="رسالة جماعية 👥",
                 callback_data="broadcast",
             )
         ],
