@@ -6,7 +6,7 @@ import models
 class MainChannel(UpdateFilter):
     def filter(self, update: Update):
         with models.session_scope() as s:
-            post_chat = s.get(models.PostChat, update.effective_chat.id)
-            if not post_chat:
+            postchat = s.get(models.PostChat, update.effective_chat.id)
+            if not postchat:
                 return False
-            return post_chat.is_main
+            return postchat.is_main

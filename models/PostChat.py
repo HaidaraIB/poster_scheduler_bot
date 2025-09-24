@@ -3,9 +3,10 @@ from models.DB import Base
 
 
 class PostChat(Base):
-    __tablename__ = "post_chats"
+    __tablename__ = "postchats"
 
     chat_id = sa.Column(sa.Integer, primary_key=True)
+    is_group = sa.Column(sa.Boolean, default=False)
     title = sa.Column(sa.String)
     is_main = sa.Column(sa.Boolean, default=False)
     support_videos = sa.Column(sa.Boolean, default=True)

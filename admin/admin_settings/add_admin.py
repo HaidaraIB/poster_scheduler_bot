@@ -5,6 +5,7 @@ from telegram import (
     ReplyKeyboardMarkup,
     KeyboardButtonRequestUsers,
     ReplyKeyboardRemove,
+    error,
 )
 from telegram.ext import (
     ContextTypes,
@@ -63,14 +64,20 @@ async def new_admin_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
             admin = s.get(models.User, admin_id)
 
             if not admin:
-                admin_chat = await context.bot.get_chat(chat_id=admin_id)
-                admin = models.User(
-                    user_id=admin_chat.id,
-                    username=admin_chat.username if admin_chat.username else "",
-                    name=admin_chat.full_name,
-                    is_admin=True,
-                )
-                s.add(admin)
+                try:
+                    admin_chat = await context.bot.get_chat(chat_id=admin_id)
+                    admin = models.User(
+                        user_id=admin_chat.id,
+                        username=admin_chat.username if admin_chat.username else "",
+                        name=admin_chat.full_name,
+                        is_admin=True,
+                    )
+                    s.add(admin)
+                except error.BadRequest:
+                    await update.message.reply_text(
+                        text="تأكد من أن المستخدم الذي تريد إضافته قد بدأ محادثة مع البوت مسبقاً",
+                    )
+                    return
             else:
                 admin.is_admin = True
 

@@ -1,4 +1,4 @@
-from admin.post_chat_settings.handlers import (
+from admin.postchat_settings.handlers import (
     postchat_settings_handler,
     add_postchat_handler,
     delete_postchat_handler,

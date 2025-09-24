@@ -24,7 +24,7 @@ from common.keyboards import (
     build_keyboard,
 )
 from common.constants import HOME_PAGE_TEXT
-from admin.post_chat_settings.keyboard import (
+from admin.postchat_settings.keyboard import (
     build_postchat_settings_keyboard,
     build_update_postchat_keyboard,
 )
@@ -55,7 +55,7 @@ async def postchat_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 postchat_settings_handler = CallbackQueryHandler(
-    postchat_settings, r"^postchat_settings|back_to_post_chat_settings$"
+    postchat_settings, r"^postchat_settings|back_to_postchat_settings$"
 )
 
 CHAT_ID, IS_MAIN, SUPPORT_VIDEOS = range(3)
@@ -114,6 +114,9 @@ async def set_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             chat = await context.bot.get_chat(chat_id=chat_id)
             context.user_data["chat_title"] = chat.title
+            context.user_data["chat_is_group"] = (
+                chat.type == Chat.GROUP or chat.type == Chat.SUPERGROUP
+            )
         except:
             await update.message.reply_text(
                 text="تأكد من أن البوت مشترك في القناة/المجموعة ❗️"
@@ -199,6 +202,7 @@ async def set_support_videos(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 s.commit()
             new_chat = models.PostChat(
                 chat_id=context.user_data["chat_id"],
+                is_group=context.user_data["chat_is_group"],
                 title=context.user_data["chat_title"],
                 is_main=context.user_data["is_main"],
                 support_videos=update.callback_query.data.replace("_support_videos", "")
@@ -274,7 +278,7 @@ async def start_update_postchat(update: Update, context: ContextTypes.DEFAULT_TY
                 texts=[p.title for p in postchats],
                 buttons_data=[f"update_postchat_{p.chat_id}" for p in postchats],
             )
-            keyboard.append(build_back_button("back_to_post_chat_settings"))
+            keyboard.append(build_back_button("back_to_postchat_settings"))
             keyboard.append(build_back_to_home_page_button()[0])
             await update.callback_query.edit_message_text(
                 text="اختر القنوات/المجموعات المتوفرة 📌",
@@ -306,11 +310,21 @@ async def update_select_field(update: Update, context: ContextTypes.DEFAULT_TYPE
             chat_id = int(update.callback_query.data.split("_")[-1])
             chat = s.get(models.PostChat, chat_id)
             if field.startswith("is_main"):
+                s.query(models.PostChat).update({models.PostChat.is_main: False})
+                s.commit()
+                if not chat.is_main:
+                    text = f"تم تعيين القناة/المجموعة {chat.title} لتصبح الرئيسية وإلغاء تعيين القناة الرئيسية الحالية ✅"
+                else:
+                    text = f"تم إلغاء تعيين القناة/المجموعة {chat.title} كرئيسية، لم يعد لديك أي قناة رئيسية الآن ✅"
                 chat.is_main = not chat.is_main
             elif field.startswith("support_videos"):
+                if chat.support_videos:
+                    text = f"القناة/المجموعة {chat.title} لم تعد تدعم الفيديوهات ✅"
+                else:
+                    text = f"القناة/المجموعة {chat.title} أصبحت تدعم الفيديوهات ✅"
                 chat.support_videos = not chat.support_videos
             await update.callback_query.answer(
-                text="تم تحديث حالة القناة/المجموعة بنجاح ✅",
+                text=text,
                 show_alert=True,
             )
             keyboard = build_update_postchat_keyboard(chat)
@@ -379,7 +393,7 @@ async def start_delete_postchat(update: Update, context: ContextTypes.DEFAULT_TY
                 ]
                 for p in postchats
             ]
-            keyboard.append(build_back_button("back_to_post_chat_settings"))
+            keyboard.append(build_back_button("back_to_postchat_settings"))
             keyboard.append(build_back_to_home_page_button()[0])
 
             await update.callback_query.edit_message_text(

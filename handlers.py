@@ -15,7 +15,7 @@ from admin.admin_calls import *
 from admin.admin_settings import *
 from admin.broadcast import *
 from admin.ban import *
-from admin.post_chat_settings import *
+from admin.postchat_settings import *
 
 from bot.copy_posts import *
 
