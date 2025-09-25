@@ -327,6 +327,7 @@ async def update_select_field(update: Update, context: ContextTypes.DEFAULT_TYPE
                 text=text,
                 show_alert=True,
             )
+            s.commit()
             keyboard = build_update_postchat_keyboard(chat)
             keyboard.append(build_back_button("back_to_update_select_chat"))
             keyboard.append(build_back_to_home_page_button()[0])
